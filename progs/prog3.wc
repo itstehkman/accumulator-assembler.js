@@ -1,0 +1,53 @@
+lui 0x8
+movr $r2    // r2 = 128, where r2 is j in the inner for loop
+lli 0x1
+movr $r1    // r1 = 129, where r1 is i in the outer for loop 
+lui 0xF
+lli 0xF     
+movr $r0    // r0 = 0xFF, where r0 is the min_dist
+lui 0x9
+lli 0x4     
+movr $r15   // r15 is the constant 148, for the outer for loop check
+
+
+label FORLOOP_OUT:
+mova $r1    // ac = i
+cmp $r2     // check if j == i. if so, set eq flag to 1
+bnei FORLOOP_IN_END // if i == j, branch past this inner for loop
+label FORLOOP_IN:
+mova $r1    // ac = i
+load $r3    // r3 = Mem[$ac] (which is Mem[i])
+mova $r2    // ac = j
+load $ac    // ac = Mem[$ac] (which is Mem[j])
+cmp $r3     // compare r3 with ac (Mem[i] with Mem[j])
+blti ELSEIF_MEM_I_LT    // if Mem[i] < Mem[j], go to the else statement
+movr $r4    // r4 = ac, where ac = Mem[j]
+mova $r3    // ac = r3, where r3 is Mem[i]
+sub $r4     // ac = Mem[j] - Mem[i]
+movr $r4    // r4 = Mem[j] - Mem[i] (where r4 is the diff variable)
+bi ENDIFELSE    // branch unconditionally to end of if-else statement
+label ELSEIF_MEM_I_LT:
+sub $r3     // ac = ac - Mem[i], where ac’s value is Mem[j]. (so this is ac = Mem[j] - Mem[i])
+movr $r4    // r4 = ac, where r4 is the diff variable
+label ENDIFELSE:
+mova $r0    // r0 is min_dist
+cmp $r4     // compare r4 with ac (where ac is min_dist)
+blti ENDIF_UPDATE_MIN
+mova $r4    // ac = r4 (diff)
+movr $r0    // r0 = r4 (which is, min_dist = diff)
+label ENDIF_UPDATE_MIN:
+inc $r2     // j++
+mova $r1    // ac = i
+cmp $r2     // check if j == i. if so, set eq flag to 1
+bnei FORLOOP_IN // if i == j, branch past this inner for loop
+label FORLOOP_IN_END:
+inc $r1     // i++
+mova $r15   // ac = 148
+cmp $r1     // compare i with 148
+bnei FORLOOP_OUT    // if i != 148, go to the start of the for loop 
+label FORLOOP_OUT_END:
+
+
+lui 7       
+lli F       // ac = mem address 127
+store $r0   // store the min_dist into Mem[127]

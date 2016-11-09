@@ -1,0 +1,22 @@
+lui 0x2     
+movr $r1    // r1 is address variable, starting at 32
+lui 0x0
+lli 0x6     // ac = memory location 6
+load $r0    //r0 is the search string
+
+
+label FORLOOP:
+mova $r1    // ac = address
+load $ac    // $ac = Mem[$ac], so ac holds the candidate value being checked
+4bitstrfind $r1 // finds the search string r1 within $ac. if it finds something, sets the eq flag to 1
+bnei IFEND  // if the eq flag isn’t set (didn’t find string), branch to end of if 
+inc $r3     // r3 ++, where r3 is the number of entries with the search string
+label IFEND:
+inc $r1     // address++
+lui 0x6
+lli 0x0         // ac = 96, used to check if address < 96
+cmp $r1     // check if address (r1) == 96 (ac). if so, set eq flag to 1
+bnei FORLOOP    // if address < 96, go to forloop again
+lui 0x0
+lli 0x7     // ac = mem address 7
+store $r3   // Mem[7] = r3 (the number of entries that have the search string)
