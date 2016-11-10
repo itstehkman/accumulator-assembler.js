@@ -48,6 +48,6 @@ bnei FORLOOP_OUT    // if i != 148, go to the start of the for loop
 label FORLOOP_OUT_END:
 
 
-lui 7       
-lli F       // ac = mem address 127
+lui 0x7       
+lli 0xF     // ac = mem address 127
 store $r0   // store the min_dist into Mem[127]
