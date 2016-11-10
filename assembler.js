@@ -27,11 +27,13 @@ var instsToOps = {
     bi:     "0011"
 };
 
-var labelsToAddresses = {};  // to be populated while parsing
+var labelsToAddresses = {};     // to be populated while parsing
+var targetsToIDs = {};          // maps targets (branch address - current address) to a unique id. the instruction will contain the id. 
 
 var program = process.argv[2];
 var outfile = process.argv[3];  // make sure that outfile doesn't already exist! we'll be appending to it if it does.
 
+console.log("Assembling " + program + " to " + outfile + "...");
 fs.readFile(program, "utf-8", function(err,fileData) {
     if (err) {
         return console.log(err);
@@ -63,7 +65,8 @@ fs.readFile(program, "utf-8", function(err,fileData) {
             address++;  // label lines don't have an address
         }
     });
-
+    
+    console.log("Labels to Addresses:");
     console.log(labelsToAddresses);
     
     // write the machine code for each line
@@ -80,6 +83,11 @@ fs.readFile(program, "utf-8", function(err,fileData) {
         }
 
     });
+
+    console.log("Targets to target IDs:");
+    console.log(targetsToIDs);
+
+    console.log("\n\n\n");
 });
 
 var writeMachineCodeForLine = function(l, address, outfile) {
@@ -133,17 +141,18 @@ var regNum = function(s) {
  */
 var fourBitImm = function(s) {
     var n = parseInt(s).toString(2);  
-    var numZeroes = 4 - n.length;
-    if (numZeroes < 0) {
+    var padZeroes = 4 - n.length;
+    if (padZeroes < 0) {
         console.log("ERROR: Got register number not within the range 0-15");
         process.exit();
     }
-    return "0".repeat(numZeroes) + n;
+    return "0".repeat(padZeroes) + n;
 };
 
 /*
- * Takes a label name and the instruction's address, and returns the target, which is equal to
- * (label address) - (instruction address). Will be returned as a 5 bit binary string.
+ * Takes a label name and the instruction's address, and returns the targetID, 
+ * which is an index into a table of targets (label address - instruction address). 
+ * The processor will use this index to lookup the actual target to calculate the branch address.
  */
 var target = function(s, address) {
     if (!labelsToAddresses.hasOwnProperty(s)) {
@@ -154,16 +163,25 @@ var target = function(s, address) {
         console.log("ERROR: Invalid address " + address);
         process.exit();
     }
-    var n = (labelsToAddresses[s] - address);
-    console.log(address + " " + n);
-
-    if (n > 0) {
-        n = parseInt(n).toString(2);
-        var numZeroes = 5 - n.length;  // guaranteed to be from 0 to 5 inclusive
-        return "0".repeat(numZeroes) + n;
-
-    } else { 
-        return ((n >>>0) & 0x1F).toString(2);  // 5 bit negative number
+    
+    var numTargetIDs = Object.keys(targetsToIDs).length;
+    if (numTargetIDs > 31) {
+        console.log("ERROR: Too many unique targets (more than 32)");
+        process.exit();
     }
+
+    var targ = (labelsToAddresses[s] - address);
+
+    var targetID;
+    if (targ in targetsToIDs) {
+        targetID = targetsToIDs[targ];
+    } else {
+        targetID = numTargetIDs++;
+        targetsToIDs[targ] = targetID;
+    }
+    
+    var targetIDStr = parseInt(targetID).toString(2);
+    var padZeroes = 5 - targetIDStr.length;
+    return "0".repeat(padZeroes) + targetIDStr;
 };
 
