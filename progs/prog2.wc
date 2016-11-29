@@ -2,12 +2,12 @@ lui 0x2
 movr $r1    // r1 is address variable, starting at 32
 lui 0x0
 lli 0x6     // ac = 6, the memory location of the 4 bit search string
-load $r2    / /r2 = Mem[6], so r2 is the search string
+load $r2    // r2 = Mem[6], so r2 is the search string
 
 
 label FORLOOP:
 mova $r1    // ac = address
-load $r4    // $ac = Mem[$ac], so ac holds the candidate value being checked
+load $r4    // $r4 = Mem[$ac], so ac holds the candidate value being checked
 mova $r2    // $ac = $r2, where r2 is the 4 bit search string
 4bitstrfind $r4 // finds the search string $ac within $r4. if it finds something, sets the eq flag to 1
 bnei IFEND  // if the eq flag isn’t set (didn’t find string), branch to end of if 
@@ -21,3 +21,4 @@ bnei FORLOOP    // if address < 96, go to forloop again
 lui 0x0
 lli 0x7     // ac = mem address 7
 store $r3   // Mem[7] = r3 (the number of entries that have the search string)
+halt
