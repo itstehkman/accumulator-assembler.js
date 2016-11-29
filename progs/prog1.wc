@@ -91,3 +91,4 @@ lli 0x4
 store $r7   // store high8bits_abc into Mem[0x4]
 lui 0x5
 store $r6   // store low8bits_abc into Mem[0x5]
+halt
