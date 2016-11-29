@@ -1,6 +1,6 @@
 // code for a * b
 lli 0x1     // load lower immediate 4 bits of ac with 0x1
-load $r0    // r0 is a
+load $r9    // r9 is a
 lli 0x2     
 load $r1    // r1 is b
 
@@ -16,7 +16,7 @@ movr $r4    // r4 = 1
 and $r3 // ac = (b >> i) & 1
 cmp $r4 // compare $r4 ( (b >>i) &1) with $ac (1). sets eq flag if the bit is set
 bnei ITHBITEND  // if i’th bit is not set, go to 0x24, otherwise, continue if i’th bit of b is set
-mova $r0    // ac = a
+mova $r9    // ac = a
 lshift $r2  // ac = (a << i)
 add $r5     // ac = low8bits_ab + (a << i). (r5 is low8bits_ab) 
 movr $r5    // low8bits_ab = ac
@@ -27,7 +27,7 @@ lui 0x0
 lli 0x8       // set ac to 0x8
 sub $r2     // ac = 8 - i. (r2 is i)
 movr $r7    // r7 = 8 - i
-mova $r0    // ac = a
+mova $r9    // ac = a
 rshift $r7  // ac = a >> (8 - i)
 add $r6     // r6 += (a >> (8 - i)).  r6 is the high8bits of a * b
 movr $r6    // save value in r6
@@ -41,7 +41,7 @@ blti FORLOOP    // if i < 8
 
 // code for result of a * b multiplied by c, starts here.
 mova $r5
-movr $r0    // r0 = low8bits_ab 
+movr $r9    // r9 = low8bits_ab 
 mova $r6    
 movr $r1    // r1 = high8bits_ab 
 lui 0x0       // set ac to 0x3
@@ -59,7 +59,7 @@ movr $r5    // r5 = ac = 0x1
 and $r4     // ac = (c >> i) & 1
 cmp $r5     // compare $r5 with ac (1 with ((c>>i) &1))
 bnei IFITHBITEND2   // if eq flag is not set, branch over the if statement
-mova $r0    // ac = low8bits_ab
+mova $r9    // ac = low8bits_ab
 lshift $r3  // ac = low8bits_ab << i
 add $r6     // ac = low8bits_ab << i + low8bits_abc
 movr $r6    // r6 = ac (r6 is low8bits_abc)
@@ -70,7 +70,7 @@ lui 0x0       // set ac to 0x8
 lli 0x8
 sub $r3     // calculate 8 - i which set zero flag if 8 - i is 0
 movr $r8    // r8 is 8 - i
-mova $r0    // ac = low8bits_ab
+mova $r9    // ac = low8bits_ab
 rshift $r8  // ac = low8bits_ab >> (8 - i)
 add $r7     // ac = (low8bits_ab >> (8 - i)) + high8bits_abc
 movr $r7    // high8bits_abc = ac
