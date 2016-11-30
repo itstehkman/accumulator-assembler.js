@@ -61,10 +61,10 @@ cmp $r5     // compare $r5 with ac (1 with ((c>>i) &1))
 bnei IFITHBITEND2   // if eq flag is not set, branch over the if statement
 mova $r9    // ac = low8bits_ab
 lshift $r3  // ac = low8bits_ab << i
-add $r6     // ac = low8bits_ab << i + low8bits_abc
-movr $r6    // r6 = ac (r6 is low8bits_abc)
+add $r10     // ac = low8bits_ab << i + low8bits_abc
+movr $r10    // r10 = ac (r10 is low8bits_abc)
 bnci CARRYBITEND2   // if carry bit is set from (low8bits_ab << i) + low8bits_abc   
-inc $r7     // high8bits_abc++
+inc $r11     // high8bits_abc++ (r11 is high8bits_abc)
 LABEL CARRYBITEND2: //end if carry bit set
 lui 0x0       // set ac to 0x8
 lli 0x8
@@ -72,12 +72,12 @@ sub $r3     // calculate 8 - i which set zero flag if 8 - i is 0
 movr $r8    // r8 is 8 - i
 mova $r9    // ac = low8bits_ab
 rshift $r8  // ac = low8bits_ab >> (8 - i)
-add $r7     // ac = (low8bits_ab >> (8 - i)) + high8bits_abc
-movr $r7    // high8bits_abc = ac
+add $r11     // ac = (low8bits_ab >> (8 - i)) + high8bits_abc
+movr $r11    // high8bits_abc = ac
 mova $r1    // ac = high8bits_ab
 lshift $r3  // ac = high8bits_ab << i
-add $r7     // ac = (high8bits_ab << i) + high8bits_abc
-movr $r7    // high8bits_abc = ac
+add $r11     // ac = (high8bits_ab << i) + high8bits_abc
+movr $r11    // high8bits_abc = ac
 label IFITHBITEND2      // end if i’th bit is set
 inc $r3     // i++
 lui 0x0
@@ -88,7 +88,7 @@ blti FORLOOP2
 
 lui 0x0       
 lli 0x4
-store $r7   // store high8bits_abc into Mem[0x4]
+store $r11   // store high8bits_abc into Mem[0x4]
 lui 0x5
-store $r6   // store low8bits_abc into Mem[0x5]
+store $r10  // store low8bits_abc into Mem[0x5]
 halt
