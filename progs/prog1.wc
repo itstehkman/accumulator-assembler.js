@@ -11,7 +11,8 @@ label FORLOOP:
 mova $r1    // ac = b
 rshift $r2  // ac = b >> i
 movr $r3    // r3 = b >> i
-lli 0x1       // load lower 4 bits of ac to 0x1
+lui 0x0     
+lli 0x1     // load lower 4 bits of ac to 0x1
 movr $r4    // r4 = 1
 and $r3 // ac = (b >> i) & 1
 cmp $r4 // compare $r4 ( (b >>i) &1) with $ac (1). sets eq flag if the bit is set
