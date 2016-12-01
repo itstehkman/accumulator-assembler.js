@@ -30,8 +30,8 @@ label ELSEIF_MEM_I_LT:
 sub $r3     // ac = ac - Mem[i], where ac’s value is Mem[j]. (so this is ac = Mem[j] - Mem[i])
 movr $r4    // r4 = ac, where r4 is the diff variable
 label ENDIFELSE:
-mova $r9    // r9 is min_dist
-cmp $r4     // compare r4 with ac (where ac is min_dist)
+mova $r4    // r4 is dist candidate
+cmp $r9     // check if r9 >= ac (min_dist). if so, update r9 with the min  
 blti ENDIF_UPDATE_MIN
 mova $r4    // ac = r4 (diff)
 movr $r9    // r9 = r4 (which is, min_dist = diff)
