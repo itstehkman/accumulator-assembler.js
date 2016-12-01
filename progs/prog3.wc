@@ -11,9 +11,9 @@ movr $r15   // r15 is the constant 148, for the outer for loop check
 
 
 label FORLOOP_OUT:
-mova $r1    // ac = i
-cmp $r2     // check if j == i. if so, set eq flag to 1
-bnei FORLOOP_IN_END // if i == j, branch past this inner for loop
+lui 0x8
+lli 0x0
+movr $r2    // r2 = 128, where r2 is j in the inner for loop
 label FORLOOP_IN:
 mova $r1    // ac = i
 load $r3    // r3 = Mem[$ac] (which is Mem[i])
@@ -39,7 +39,7 @@ label ENDIF_UPDATE_MIN:
 inc $r2     // j++
 mova $r1    // ac = i
 cmp $r2     // check if j == i. if so, set eq flag to 1
-bnei FORLOOP_IN // if i == j, branch past this inner for loop
+bnei FORLOOP_IN // if i != j, go to inner for loop start 
 label FORLOOP_IN_END:
 inc $r1     // i++
 mova $r15   // ac = 148
